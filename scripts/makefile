@@ -40,3 +40,5 @@ $(EXECDIR):
 	mkdir -p $(EXECDIR)
 $(SEXECDIR):
 	mkdir -p $(SEXECDIR)
+test1: install
+	gibbons ~/890-0.txt
