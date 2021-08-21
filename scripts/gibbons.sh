@@ -16,13 +16,24 @@ scriptname=${0##*/}
 #
 ######################################################################
 ######################################################################
+source func.errecho
 
 DICTIONARY=/usr/share/dict/american-english
 NOPOSS=/tmp/no-possessive
 wcount=$(cat ${NOPOSS} | wc -l)
 modulo=$((wcount-65536))
 dictprep ${DICTIONARY} ${NOPOSS}
-GIBBONSv1=${HOME}/Dropbox/AAA_My_Jobs/oth/Gutenberg/890/890-0.txt
+if [ $# -gt 0 ]
+then
+  GIBBONSv1="$1"
+else
+	if [ ! -d ${HOME}/Dropbox ]
+	then
+	  GIBBONSv1=/mnt/Dropbox/AAA_My_Jobs/oth/Gutenberg/890/890-0.txt
+	else
+	  GIBBONSv1=${HOME}/Dropbox/AAA_My_Jobs/oth/Gutenberg/890/890-0.txt
+	fi
+fi
 if [ ! -r ${GIBBONSv1} ]
 then
   errecho ${FUNCNAME} {LINENO} \
