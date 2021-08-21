@@ -41,4 +41,4 @@ $(EXECDIR):
 $(SEXECDIR):
 	mkdir -p $(SEXECDIR)
 test1: install
-	gibbons ~/890-0.txt
+	gibbons ../etc/890-0.txt
