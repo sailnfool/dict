@@ -42,17 +42,17 @@ USAGE="\r\n${scriptname} [-hp]  [-d <dictionary>] <text file>\r\n
 \t\tthat diagnostic engineers can use to mnemonically remember\r\n
 \t\tthese strings which would be opaque otherwise.\r\n
 \r\n
-\t\tan idiosyncrasy of the Linux American English dictionary is\r\n
-\t\tthat it explicityly lists the possessive forms of words.\r\n
+\t\tAn idiosyncrasy of the Linux American English dictionary is\r\n
+\t\tthat it explicitly lists the possessive forms of words.\r\n
 \t\tThis application first strips out all of the possessive\r\n
 \t\tof the words to avoid this idiosyncratic form of the\r\n
 \t\tdictionary.\r\n
 \t-d\t<#>\tis the number which designates the level of diagnostic\r\n
-\t\t\toutput that is generated:
+\t\t\toutput that is generated:\r\n
 \t\t\tDEBUGWAVE\t2\tIf the entry/exit macros are used prints a wave\r\n
 \t\t\t\t\t\tlike trace of entry/exit to functions (currently\r\n
 \t\t\t\t\t\tnot implemented).\r\n
-\t\t\tDEBUGVAR\t3\tPrint variable data from functions if enabled\r\n
+\t\t\tDEBUGWAVAR\t3\tPrint variable data from functions if enabled\r\n
 \t\t\tDEBUGSTRACE\t5\tPrefix the executable with strace\r\n
 \t\t\t\t\t\tif implemented).\r\n
 \t\t\tDEBUGNOEXECUTE or\r\n
@@ -71,7 +71,7 @@ donstrip="FALSE"
 DICTIONARY=/usr/share/dict/american-english
 optionargs="dhpt:"
 NUMARGS=1
-FUNC_DEBUG=${DEBUGOFFF}
+FUNC_DEBUG=${DEBUGOFF}
 export FUNC_DEBUG
 
 while getopts ${optionargs} name
@@ -157,7 +157,10 @@ hashexec=b2sum
 hashhexbytes=128
 genhash=$(${hashexec} ${INFILE})
 bhash=${genhash:0:${hashhexbytes}}
-echo $bhash
+if [ "${FUNC_DEBUG}" -eq "${DEBUGWAVAR}" ]
+then
+  echo $bhash
+fi
 chars=${#bhash}
 
 ######################################################################
@@ -175,8 +178,6 @@ fi
 # seeded random numbers for getting distributed results in a pseudo
 # random scattering of the encoding across the dictionary.
 ######################################################################
-echo ${decfirstindex}
-RANDOM=${decfirstindex}
 wordindex=0
 declare -a words
 while read -r input
@@ -197,11 +198,19 @@ done < ${NOPOSS}
 char4=4
 firstindex=${bhash:0:${char4}}
 wordindex=$((16#${firstindex}))
+if [ "${FUNC_DEBUG}" -eq "${DEBUGWAVAR}" ]
+then
+  echo "wordindex=${wordindex}"
+fi
+RANDOM=${wordindex}
 echo -n "${words[${wordindex}]}-"
 
 DIAG=/tmp/diag$$.txt
 rm -f ${DIAG}
-echo -e "first16\twordindex\tnewindex" >> ${DIAG}
+if [ "${FUNC_DEBUG}" -eq "${DEBUGWAVAR}" ]
+then
+  echo -e "first16\twordindex\tnewindex" >> ${DIAG}
+fi
 
 index=0
 while [ "${index}" -lt "${chars}" ]
@@ -209,7 +218,10 @@ do
   first16=${bhash:${index}:${char4}}
   wordindex=$((16#${first16}))
   newindex=$(((RANDOM%modulo)+wordindex))
-  echo -e "${first16}\t${wordindex}\t${newindex}" >> ${DIAG}
+  if [ "${FUNC_DEBUG}" -eq "${DEBUGWAVAR}" ]
+  then
+    echo -e "${first16}\t${wordindex}\t${newindex}" >> ${DIAG}
+  fi
   if [ "$index" -ne 0 ]
   then
     echo -n "-"
@@ -219,5 +231,9 @@ do
 done
 
 echo ""
-# rm -f ${DIAG}
-more ${DIAG}
+if [ "${FUNC_DEBUG}" -eq "${DEBUGWAVAR}" ]
+then
+  more ${DIAG}
+  rm -f ${DIAG}
+fi
+exit 0
