@@ -160,6 +160,7 @@ hashexec=b2sum
 hashhexbytes=128
 genhash=$(${hashexec} ${INFILE})
 bhash=${genhash:0:${hashhexbytes}}
+chars=${#bhash}
 echo $bhash
 wordindex=0
 declare -a words
@@ -179,7 +180,7 @@ done < ${NOPOSS}
 # to convert from hex to decimal to avoid an external process.
 ######################################################################
 char4=4
-index=s
+index=0
 first16=${bhash:${index}:${char4}}
 wordindex=$((16#${first16}))
 RANDOM=${wordindex}
@@ -189,7 +190,7 @@ DIAG=/tmp/diag$$.txt
 rm -f ${DIAG}
 echo -e "first16\twordindex\tnewindex" >> ${DIAG}
 
-index=s
+index=0
 while [ "${index}" -lt "${chars}" ]
 do
   first16=${bhash:${index}:${char4}}
