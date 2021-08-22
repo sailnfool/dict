@@ -35,9 +35,12 @@ then
 fi
 exphash=/tmp/exphash$$
 enchash=/tmp/enchash$$
+DIAG=/tmp/diag.txt
 tr '-' '\n' < ${codedhash} > ${exphash}
 tail +2 ${exphash} > ${enchash}
 wordseed=$(head -1 ${exphash})
+cat ${exphash} >> ${DIAG}
+echo "wordseed=${wordseed}" >> ${DIAG}
 # randomseed=$(awk "NR==${firstindex}" < ${NOPOSS})
 # echo ${firstindex}
 # RANDOM=$((16#${firstindex}))
@@ -55,9 +58,14 @@ RANDOM=${randomseed}
 index=0
 while read -r input
 do
+  echo -n -e  $input}\t >> ${DIAG}
   wordindex=${hashes[${input}]}
+  echo -n -e ${wordindex}a\t >> ${DIAG}
   wordindex=$((wordindex-(RANDOM%modulo)))
-  echo -n "$(printf '%4x' ${wordindex})"
+  echo -n -e ${wordindex}a\t >> ${DIAG}
+  echo -n "$(printf '%4x' ${wordindex})" | tee -a ${DIAG}
+  echo "" >> ${DIAG}
 done < ${enchash}
 rm -f ${enchash} ${exphash}
 echo ""
+cat ${DIAG}

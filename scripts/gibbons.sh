@@ -137,6 +137,12 @@ fi
 bits16=$(echo '2^16' | bc)
 wcount=$(cat ${NOPOSS} | wc -l)
 modulo=$((wcount-bits16))
+if [ "${FUNC_DEBUG}" -eq "${DEBUGWAVAR}" ]
+then
+  echo "bits16=${bits16}"
+  echo "wcount=${wcount}"
+  echo "modulo=${modulo}"
+fi
 if [ "${modulo}" -gt "${bits16}" ]
 then
   errecho ${FUNCNAME} ${LINENO} \
