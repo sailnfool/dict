@@ -6,7 +6,8 @@ SPREFIX?=/usr/local
 	@rm -f $@
 	cp $< $@
 INSTALL =       dictprep \
-								gibbons
+	gibbons \
+	rgibbons
 
 EXECDIR := $(PREFIX)/bin
 SEXECDIR := $(SPREFIX)/sbin
@@ -40,5 +41,12 @@ $(EXECDIR):
 	mkdir -p $(EXECDIR)
 $(SEXECDIR):
 	mkdir -p $(SEXECDIR)
+GIBBONS=../etc/890-0.txt
 test1: install
-	gibbons ../etc/890-0.txt
+	gibbons $(GIBBONS)
+test2: install $(GIBBONS)
+	gibbons $(GIBBONS) > /tmp/t1
+	cat /tmp/t1
+	rgibbons /tmp/t1 > /tmp/t2
+	getb2sum $(GIBBONS) > /tmp/t3
+	cmp /tmp/t2 /tmp/t3
